@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
 // ANSI Color Codes for enhanced terminal output
 class Colors {
@@ -27,7 +28,7 @@ class Colors {
 
 // ⚠️ SHARED RESOURCES - These need synchronization! ⚠️
 class SharedResources {
-    // TODO: Students will add synchronization mechanisms here
+     // TODO: Students will add synchronization mechanisms here
     // HINT: Use ReentrantLock for mutual exclusion
     // HINT: Use Semaphore for limiting concurrent access
     
@@ -36,6 +37,7 @@ class SharedResources {
     public static long totalWaitingTime = 0;       // Shared accumulator - NEEDS PROTECTION!
     public static List<String> executionLog = new ArrayList<>();  // Shared list - NEEDS PROTECTION!
     
+    public static final ReentrantLock counterlock = new ReentrantLock();// feature 1
     // TODO #1: Add a ReentrantLock(s) here to protect critical sections
     // Example: public static final ReentrantLock lock = new ReentrantLock();
     
@@ -46,19 +48,37 @@ class SharedResources {
     public static void incrementContextSwitch() {
         // TODO: Protect this critical section with a lock
         // RACE CONDITION: Multiple threads might read and write simultaneously!
-        contextSwitchCount++;
+        counterlock.lock();
+        try {
+            contextSwitchCount++;
+        } finally {
+            counterlock.unlock();
+        }
     }
     
     // Method to increment completed process counter
     public static void incrementCompletedProcess() {
         // TODO: Protect this critical section with a lock
         completedProcessCount++;
+    counterlock.lock();
+        try {
+            completedProcessCount++;
+        } finally {
+            counterlock.unlock();
+        }
+
     }
     
     // Method to add waiting time
     public static void addWaitingTime(long time) {
         // TODO: Protect this critical section with a lock
+    counterlock.lock();
+        try {   
         totalWaitingTime += time;
+        } finally {
+            counterlock.unlock();
+        }
+
     }
     
     // Method to log execution
