@@ -40,6 +40,8 @@ class SharedResources {
     public static final ReentrantLock counterlock = new ReentrantLock();// feature 1
     // TODO #1: Add a ReentrantLock(s) here to protect critical sections
     // Example: public static final ReentrantLock lock = new ReentrantLock();
+    // feature 2
+    final static ReentrantLock logLock = new ReentrantLock(); // Separate lock for logging to reduce contention
     
     // TODO #2: Add a Semaphore to limit concurrent process execution
     // Example: public static final Semaphore cpuSemaphore = new Semaphore(1);
@@ -72,7 +74,7 @@ class SharedResources {
     // Method to add waiting time
     public static void addWaitingTime(long time) {
         // TODO: Protect this critical section with a lock
-    counterlock.lock();
+    counterlock.lock();//fueature 2
         try {   
         totalWaitingTime += time;
         } finally {
@@ -84,8 +86,13 @@ class SharedResources {
     // Method to log execution
     public static void logExecution(String message) {
         // TODO: Protect this critical section with a lock
-        // RACE CONDITION: ArrayList is not thread-safe!
+        // RACE CONDITION: ArrayList is not thread-safe, multiple threads might modify it simultaneously!
+    logLock.lock();
+        try {
         executionLog.add(message);
+        } finally {
+            logLock.unlock();
+        }
     }
 }
 
