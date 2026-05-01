@@ -124,6 +124,8 @@ class Process implements Runnable {
         
         try {
 
+         // NEW: acquire CPU semaphore before execution
+         SharedResources.cpuSemaphore.acquire();
             if (startTime == -1) {
                 startTime = System.currentTimeMillis();
             }
@@ -189,6 +191,7 @@ class Process implements Runnable {
             // TODO #4: Release CPU semaphore here
             // Always release in finally block to prevent deadlocks!
             // NEW: Release CPU semaphore after execution
+        SharedResources.cpuSemaphore.release();
         }
     }
     
