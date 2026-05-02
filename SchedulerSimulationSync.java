@@ -189,7 +189,6 @@ class Process implements Runnable {
             e1.printStackTrace();
         } finally {
             // TODO #4: Release CPU semaphore here
-            // Always release in finally block to prevent deadlocks!
             // NEW: Release CPU semaphore after execution
         SharedResources.cpuSemaphore.release();
         }
